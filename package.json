@@ -1,0 +1,26 @@
+{
+  "name": "ui-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "preinstall": "node gcpSetup.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "iobami",
+  "license": "ISC",
+  "dependencies": {
+    "@google/maps": "^1.0.2",
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dialogflow": "^1.2.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.15.2",
+    "ibm-watson": "^5.1.0",
+    "moment": "^2.25.3",
+    "request": "^2.88.0",
+    "socket.io": "^2.2.0"
+  }
+}

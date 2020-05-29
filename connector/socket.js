@@ -27,7 +27,7 @@ const createSocketConnection = (io) => {
 
                 console.log('--------------hello-----------+++++++++++++++++++++');
 
-                const botResponse = [];
+                let botResponse = [];
 
                 console.log(result.action);
 
@@ -238,7 +238,7 @@ const createSocketConnection = (io) => {
 
                             }
 
-                            getFormattedBotResponse(result, botResponse);
+                            botResponse = await getFormattedBotResponse(result, botResponse);
 
                         }
 
@@ -246,6 +246,7 @@ const createSocketConnection = (io) => {
 
 
                 // sending to individual socketId (private message)
+                // console.log(botResponse);
                 await io.to(`${socket.id}`).emit('chat', { response: botResponse });
             };
 

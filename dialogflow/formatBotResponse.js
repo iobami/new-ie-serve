@@ -2,7 +2,17 @@ const { cards, texts, quickReplies } = require('../dialogflow/messageComponents'
 
 const getFormattedBotResponse = (result, botResponse) => {
 
-    result.fulfillmentMessages.forEach((fulfillmentMessageObject) => {
+    function duplicateText(botResponse, query) {
+        return botResponse.filter(response => !(response.text === query));
+    }
+
+    // result.fulfillmentMessages.forEach((fulfillmentMessageObject) => {
+    //
+    //
+    //
+    // });
+
+    for (const fulfillmentMessageObject of result.fulfillmentMessages) {
 
         // check if PLATFORM_UNSPECIFIED has a text in PLATFORM: FACEBOOK
         // if yes, do not add to botResponse
@@ -10,9 +20,12 @@ const getFormattedBotResponse = (result, botResponse) => {
 
             if (fulfillmentMessageObject.text.text[0] === '') return;
             if (botResponse.length) {
-                return botResponse.forEach((botMessageObject) => {
-                    if (botMessageObject.text === fulfillmentMessageObject.text.text[0]) {}
-                });
+
+                botResponse = duplicateText(botResponse, fulfillmentMessageObject.text.text[0]);
+
+                // return botResponse.forEach((botMessageObject) => {
+                //     if (botMessageObject.text === fulfillmentMessageObject.text.text[0]) {}
+                // });
             }
 
         }
@@ -43,7 +56,8 @@ const getFormattedBotResponse = (result, botResponse) => {
             botResponse.push(quickreply);
         }
 
-    });
+    }
+    return botResponse;
 
 };
 

@@ -18,6 +18,21 @@ const getPaymentHistory = (accountNumber) => {
     });
 };
 
+const getExistingServiceRequest = (ticketNumber) => {
+    return axios({
+        method: 'GET',
+        url: `${process.env.APP_API_URL}/cases/${ticketNumber}`,
+    });
+};
+
+const createServiceRequest = (data) => {
+    return axios({
+        method: 'POST',
+        url: `${process.env.APP_API_URL}/cases`,
+        data: data,
+    });
+};
+
 module.exports = {
-    getBillHistory, getPaymentHistory,
+    getBillHistory, getPaymentHistory, getExistingServiceRequest, createServiceRequest,
 };

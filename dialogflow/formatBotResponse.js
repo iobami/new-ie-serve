@@ -1,4 +1,4 @@
-const { cards, texts, quickReplies } = require('../dialogflow/messageComponents');
+const { cards, texts, links, quickReplies } = require('../dialogflow/messageComponents');
 
 const getFormattedBotResponse = (result, botResponse) => {
 
@@ -18,14 +18,31 @@ const getFormattedBotResponse = (result, botResponse) => {
         // if yes, do not add to botResponse
         if (fulfillmentMessageObject.platform === 'PLATFORM_UNSPECIFIED') {
 
-            if (fulfillmentMessageObject.text.text[0] === '') return;
-            if (botResponse.length) {
+            if (fulfillmentMessageObject.message === 'payload') {
+                const {
+                    message: {
+                        stringValue: messageType,
+                    },
+                } = fulfillmentMessageObject.payload.fields;
 
-                botResponse = duplicateText(botResponse, fulfillmentMessageObject.text.text[0]);
+                if (messageType === 'link') {
+                    const { listValue } = fulfillmentMessageObject.payload.fields.text.structValue.fields.text;
+                    const link = listValue.values[0].stringValue;
 
-                // return botResponse.forEach((botMessageObject) => {
-                //     if (botMessageObject.text === fulfillmentMessageObject.text.text[0]) {}
-                // });
+                    const formattedText = [
+                        link,
+                    ];
+                    const text = links({ text: formattedText });
+                    botResponse.push(text);
+                }
+
+            } else {
+                if (fulfillmentMessageObject.text.text[0] === '') return;
+                if (botResponse.length) {
+
+                    botResponse = duplicateText(botResponse, fulfillmentMessageObject.text.text[0]);
+
+                }
             }
 
         }

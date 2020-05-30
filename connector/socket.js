@@ -3,6 +3,7 @@ const { getFormattedBotResponse } = require('../dialogflow/formatBotResponse');
 const { texts } = require('../dialogflow/messageComponents');
 const { buManagersIntent } = require('../dialogflow/intents/BU Managers');
 const { checkBills } = require('../dialogflow/intents/check bills');
+const { checkExistingSR, createNewSR } = require('../dialogflow/intents/enquiry and complaints');
 const { checkPayment } = require('../dialogflow/intents/check payment history');
 
 const createSocketConnection = (io) => {
@@ -35,11 +36,60 @@ const createSocketConnection = (io) => {
                 let accountNumber = '';
                 let fields;
                 let account_no;
+                let ticketNumber;
+                let description;
+                let subject;
 
                 switch (result.action) {
                     case 'specifiedBU':
 
                         buManagersIntent(result, botResponse);
+
+                        break;
+
+                    case 'createenquiry.ticket':
+
+                        if (!result.outputContexts.length) return;
+                        ({ fields } = result.outputContexts[1].parameters);
+                        if (!fields) return;
+
+                        ({ description, subject, account_no } = fields);
+
+                        const response = await createNewSR({
+                            description: description.stringValue,
+                            subject: subject.stringValue,
+                            account_no: account_no.stringValue,
+                        });
+
+                        if (response.length) {
+                            await response.forEach((textObject) => {
+                                botResponse.push(textObject);
+                            });
+                        }
+
+                        break;
+
+                    case 'check.existing.enquiry':
+
+                        if (!result.parameters.fields) return;
+                        ({ fields } = result.parameters);
+                        if (!fields) return;
+
+                        ({ srNumber: ticketNumber } = fields);
+                        ticketNumber = ticketNumber.stringValue;
+
+                        if (ticketNumber !== '') {
+                            const response = await checkExistingSR(ticketNumber);
+                            if (response.length) {
+                                await response.forEach((textObject) => {
+                                    botResponse.push(textObject);
+                                });
+                            }
+                        } else {
+
+                            getFormattedBotResponse(result, botResponse);
+
+                        }
 
                         break;
 

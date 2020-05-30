@@ -14,7 +14,7 @@ const cards = (data) => {
             title: '',
             options: buttons,
         },
-        options: null, 
+        options: null,
     };
 };
 
@@ -22,7 +22,16 @@ const texts = (data) => {
     return {
         text: data.text[0],
         group: null,
-        options: null, 
+        options: null,
+    };
+};
+
+const links = (data) => {
+    return {
+        text: null,
+        link: data.text[0],
+        group: null,
+        options: null,
     };
 };
 
@@ -38,10 +47,10 @@ const quickReplies = (data) => {
     return {
         text: null,
         group: null,
-        options: optionsArray, 
+        options: optionsArray,
     };
 };
 
 module.exports = {
-    cards, texts, quickReplies,
+    cards, texts, quickReplies, links,
 };

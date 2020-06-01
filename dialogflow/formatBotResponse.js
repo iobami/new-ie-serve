@@ -73,6 +73,55 @@ const getFormattedBotResponse = (result, botResponse) => {
             botResponse.push(quickreply);
         }
 
+        if (fulfillmentMessageObject.message === 'payload') {
+            const { facebook } = fulfillmentMessageObject.payload.fields;
+            const {
+                structValue: {
+                    fields: {
+                        attachment: {
+                            structValue: {
+                                fields: {
+                                    payload: payload,
+                                    type: type,
+                                }
+                            }
+                        }
+                    }
+                }
+            } = facebook;
+
+            const {
+                structValue: {
+                    fields: {
+                        text: {
+                            structValue: {
+                                fields: {
+                                    text: {
+                                        listValue: {
+                                            values: [
+                                                {
+                                                    stringValue: url
+                                                },
+                                            ],
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            } = payload;
+
+            if (type.stringValue === 'link') {
+
+                const formattedText = [
+                    url,
+                ];
+                const text = links({ text: formattedText });
+                botResponse.push(text);
+            }
+        }
+
     }
     return botResponse;
 

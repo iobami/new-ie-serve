@@ -43,7 +43,7 @@ const createSocketConnection = (io) => {
                 switch (result.action) {
                     case 'specifiedBU':
 
-                        buManagersIntent(result, botResponse);
+                        await buManagersIntent(result, botResponse);
 
                         break;
 

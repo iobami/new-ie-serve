@@ -35,7 +35,7 @@ const  createNewSR = async (srDetails) => {
             + `Phone No. : , Contact Address: null.`,
         status: 'Open',
         priority: 'P1',
-        account_name: srDetails.account_no,
+        account_name: 'GENERIC-CUSTOMER',
         state: 'Open',
         category: 'REQUEST/ENQUIRY',
         sub_category: 'enquiry_about_ie',
@@ -47,9 +47,17 @@ const  createNewSR = async (srDetails) => {
 
     try {
         const { data } = await createServiceRequest(complaints);
-        console.log(JSON.stringify(data));
+        const { case_no } = data.data[0];
+        const formattedText = [
+            `Your service request ${case_no} has been created `,
+        ];
+        const text = texts({ text: formattedText });
+        textArray.push(text);
+
+        return textArray;
+
     } catch (e) {
-        console.log(e);
+        console.log(e.message);
         const formattedText = [
             'Error occurred, please try again.',
         ];

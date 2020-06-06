@@ -5,6 +5,7 @@ const { buManagersIntent } = require('../dialogflow/intents/BU Managers');
 const { checkBills } = require('../dialogflow/intents/check bills');
 const { checkExistingSR, createNewSR } = require('../dialogflow/intents/enquiry and complaints');
 const { checkPayment } = require('../dialogflow/intents/check payment history');
+const { getManagersInUT, getTouchPointsUTs } = require('../dialogflow/intents/touchpoints');
 
 const createSocketConnection = (io) => {
     io.on('connection', async function(socket){
@@ -39,11 +40,50 @@ const createSocketConnection = (io) => {
                 let ticketNumber;
                 let description;
                 let subject;
+                let ut;
 
                 switch (result.action) {
                     case 'specifiedBU':
 
                         await buManagersIntent(result, botResponse);
+
+                        break;
+
+                    case 'touchpoint.ut':
+
+                        if (!result.outputContexts.length) return;
+
+                        ({ parameters: ut } = result.outputContexts[0]);
+
+                        ({ fields: {
+                                undertaking: {
+                                    stringValue: ut,
+                                },
+                            }, } = ut);
+
+                        await getManagersInUT(ut, botResponse);
+
+                        break;
+
+                    case 'touchpoint.bu':
+
+                        if (!result.outputContexts.length) return;
+
+                        ({ parameters: subject } = result.outputContexts[0]);
+
+                        ({ fields: {
+                                businessUnits: {
+                                    stringValue: subject,
+                                },
+                            }, } = subject);
+
+                        const formattedText = [
+                            'These are the available UTs from the selected BU. Please select the UT of interest',
+                        ];
+                        const text = texts({ text: formattedText });
+                        botResponse.push(text);
+                        fields = await getTouchPointsUTs(subject);
+                        botResponse.push(fields);
 
                         break;
 
@@ -272,13 +312,13 @@ const createSocketConnection = (io) => {
 
                             }
 
-                            if ((displayName.length > 1) && (displayName[0].toLowerCase() === 'touchpoints ')) {
-
-                                result = {
-                                    fulfillmentMessages: result.fulfillmentMessages.filter(checkCard),
-                                };
-
-                            }
+                            // if ((displayName.length > 1) && (displayName[0].toLowerCase() === 'touchpoints ')) {
+                            //
+                            //     result = {
+                            //         fulfillmentMessages: result.fulfillmentMessages.filter(checkCard),
+                            //     };
+                            //
+                            // }
 
                             if ((displayName[0] === 'ContactUs')) {
 
@@ -289,7 +329,6 @@ const createSocketConnection = (io) => {
                             }
 
                             botResponse = await getFormattedBotResponse(result, botResponse);
-
                         }
 
                 }

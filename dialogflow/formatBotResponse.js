@@ -37,12 +37,14 @@ const getFormattedBotResponse = (result, botResponse) => {
                 }
 
             } else {
-                if (fulfillmentMessageObject.text.text[0] === '') return;
-                if (botResponse.length) {
+                if (fulfillmentMessageObject.text.text[0] !== '') {
+                    if (botResponse.length) {
 
-                    botResponse = duplicateText(botResponse, fulfillmentMessageObject.text.text[0]);
+                        botResponse = duplicateText(botResponse, fulfillmentMessageObject.text.text[0]);
 
+                    }
                 }
+
             }
 
         }
@@ -71,6 +73,55 @@ const getFormattedBotResponse = (result, botResponse) => {
             }
             const quickreply = quickReplies(fulfillmentMessageObject.quickReplies);
             botResponse.push(quickreply);
+        }
+
+        if (fulfillmentMessageObject.message === 'payload') {
+            const { facebook } = fulfillmentMessageObject.payload.fields;
+            const {
+                structValue: {
+                    fields: {
+                        attachment: {
+                            structValue: {
+                                fields: {
+                                    payload: payload,
+                                    type: type,
+                                }
+                            }
+                        }
+                    }
+                }
+            } = facebook;
+
+            const {
+                structValue: {
+                    fields: {
+                        text: {
+                            structValue: {
+                                fields: {
+                                    text: {
+                                        listValue: {
+                                            values: [
+                                                {
+                                                    stringValue: url
+                                                },
+                                            ],
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            } = payload;
+
+            if (type.stringValue === 'link') {
+
+                const formattedText = [
+                    url,
+                ];
+                const text = links({ text: formattedText });
+                botResponse.push(text);
+            }
         }
 
     }

@@ -336,6 +336,7 @@ const createSocketConnection = (io) => {
 
                 // sending to individual socketId (private message)
                 // console.log(botResponse);
+                // console.log(JSON.stringify(botResponse));
                 await io.to(`${socket.id}`).emit('chat', { response: botResponse });
             };
 

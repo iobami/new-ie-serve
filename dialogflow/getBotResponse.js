@@ -17,8 +17,17 @@ const getDialogFlowResponse = async (projectId, userMessage, socketId) => {
     // const sessionId = uuid.v4();
     const  sessionId = socketId;
 
+    const client_email = process.env.CLIENT_EMAIL;
+    const private_key = process.env.PRIVATE_KEY.replace(/\\n/gm, '\n');
+
     // Create a new session
-    const sessionClient = new dialogflow.SessionsClient();
+    const sessionClient = new dialogflow.SessionsClient({
+        projectId,
+        credentials: {
+            client_email,
+            private_key
+        }
+    });
     const sessionPath = sessionClient.sessionPath(projectId, sessionId);
 
     // The text query request.
